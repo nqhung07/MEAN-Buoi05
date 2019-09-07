@@ -27,13 +27,14 @@
 
                 socket.emit('client-gui-hoten', hoten)
             })
+
             //upload
             $("#btnupload").click(function () {
                 // alert('click')
                 var data = new FormData();
                 jQuery.each(jQuery('#fileAvatar')[0].files, function (i, file) {
-                    console.log('file-' + i);
-                    data.append('file-' + i, file);
+                    console.log('file-' +i);
+                    data.append('file-' +i, file);
                 });
 
                 jQuery.ajax({
@@ -97,7 +98,10 @@
         //hien thi danh sach chat
         socket.on("server-gui-msg",function(data){
             $("#dschat").append(
-                `<p>`+ data.hoten + ": " + data.msg + `</p>`
+                
+                `<img src="upload/` + data.hinh + `"  alt="">` 
+                + `<p>`+ data.hoten + ": " + data.msg + `</p>` 
+                
             )
         })
 
@@ -123,8 +127,8 @@
 
     <!-- hinh -->
     <br>
-    <!-- <img src="images/anh.jpg" alt="" height="40" width="30"> -->
-    <input type="file" name="filefield" id="filefield">
+    <img id="imgAvatar" src="images/avatar.png" alt="man">
+    <input type="file" name="fileAvatar" id="fileAvatar">
     <input type="button" value="upload" id="btnupload">
 
     <!-- msg  -->
@@ -134,6 +138,9 @@
 
     <div id="dschat">
         <h2>Danh sach chat</h2>
+        
+        
+        
         
     </div>
 </body>

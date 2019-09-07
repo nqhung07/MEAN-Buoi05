@@ -31,7 +31,7 @@ var storage = multer.diskStorage({
 var upload = multer({
     storage: storage,
     fileFilter: function (req, file, cb) {
-        console.log(file);
+        console.log("file",file);
         if ((file.mimetype == "image/gif" || file.mimetype == "image/bmp" || file.mimetype == "image/jpeg" || file.mimetype == "image/png")) {
             cb(null, true)
         } else {
@@ -68,7 +68,7 @@ io.on('connection',function(socket){
     //hinh
     socket.on('client-gui-hinh',function(data){
         socket.Hinh = data    
-        console.log(socket.Hinh);  
+        console.log("client-gui-hinh",socket.Hinh);  
         
     }) 
 
@@ -108,7 +108,7 @@ app.post("/xuly", function (req, res) {
             console.log("An unknown error occurred when uploading." + err);
             res.json({"kq":0})
         } else {
-            res.send("Upload is okay");
+           console.log("Upload is okay");
 
            res.json({"kq":1, "file": req.file.filename})
             
