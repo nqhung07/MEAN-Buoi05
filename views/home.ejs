@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="layout.css">
+    <script src="jquery.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <title>Home Buoi05</title>
+
+    <script>
+
+        var socket = io("http://localhost:3000/")
+
+        $(document).ready(function () {
+            //tao room
+            $("#btntaoroom").click(function () {
+                var tenroom = $("#txttenroom").val();
+                socket.emit('client-gui-tenroom', tenroom)
+            })
+            //gui ho ten
+            $("#btnhoten").click(function () {
+                var hoten = $("#txthoten").val();
+                console.log(hoten);
+
+                socket.emit('client-gui-hoten', hoten)
+            })
+            //upload
+            $("#btnupload").click(function () {
+                // alert('click')
+                var data = new FormData();
+                jQuery.each(jQuery('#fileAvatar')[0].files, function (i, file) {
+                    console.log('file-' + i);
+                    data.append('file-' + i, file);
+                });
+
+                jQuery.ajax({
+                    url: './xuly',
+                    data: data,
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                    method: 'POST',
+                    type: 'POST', // For jQuery < 1.9
+                    success: function (data) {
+                        if (data.kq == 1) {
+                            $("#imgAvatar").attr("src", "upload/" + data.file);
+                            socket.emit("client-gui-hinh", data.file)
+                        } else {
+                            alert("Upload fail!");
+                        }
+                    }
+                });
+
+            })
+
+            //change room
+
+            $("#dsselectroom").change(function () {
+                socket.emit('client-gui-changeroom', $(this).val())
+            })
+
+            //gui msg
+            $("#btnmsg").click(function () {
+                var msg = $("#txtmsg").val();
+                var tenroom = $("#dsselectroom").val()
+                console.log(msg);
+
+                socket.emit('client-gui-msg',
+                    {
+                        "msg": msg,
+                        "tenroom": tenroom
+                    }
+                )
+            })
+
+        })
+
+        //change room
+        socket.on('server-gui-dsroom', function (data) {
+            var roomRefix = "Thanos2019_"
+            console.log(data);
+            $("#dsselectroom").html('')
+            for (room in data) {
+                if (room.includes(roomRefix)) {
+                    room = room.replace(roomRefix, '');
+                    $("#dsselectroom").append(
+                        `<option value=` + room + `>` + room + `</option>`
+                    )
+                }
+            }
+
+        })
+
+        //hien thi danh sach chat
+        socket.on("server-gui-msg",function(data){
+            $("#dschat").append(
+                `<p>`+ data.hoten + ": " + data.msg + `</p>`
+            )
+        })
+
+
+
+
+    </script>
+
+</head>
+
+<body>
+    <h1>Buoi 05</h1>
+    <!-- ds cac room co san -->
+    <select name="" id="dsselectroom">
+        <option value="0">-- Chon --</option>
+    </select>
+
+    <!-- tao room -->
+    <input type="text" id="txttenroom" placeholder="ten room">
+    <input type="button" value="Tao Room" id="btntaoroom">
+
+    <!-- ho ten -->
+    <br>
+    <input type="text" id="txthoten" placeholder="Ho Ten">
+    <input type="button" value="Đặt tên" id="btnhoten">
+
+    <!-- hinh -->
+    <br>
+    <!-- <img src="images/anh.jpg" alt="" height="40" width="30"> -->
+    <input type="file" name="filefield" id="filefield">
+    <input type="button" value="upload" id="btnupload">
+
+    <!-- msg  -->
+    <br>
+    <input type="text" id="txtmsg" placeholder="msg">
+    <input type="button" value="Chat" id="btnmsg">
+
+    <div id="dschat">
+        <h2>Danh sach chat</h2>
+        
+    </div>
+</body>
+
+</html>
